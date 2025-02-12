@@ -454,7 +454,7 @@ def plot_and_save_waveform(data_tuples, fps, png_path):
     # Convert to arrays for easier plotting
     arr = np.array(data_tuples)  # shape [N, 3]
     # arr[:,0] = time_step, arr[:,1] = stimulus, arr[:,2] = waveform
-    timesteps = arr[:, 0]  # frames
+    timesteps = np.arange(len(arr[:, 0]))  # frames
     stimulus  = arr[:, 1]
     waveform  = arr[:, 2]
 
