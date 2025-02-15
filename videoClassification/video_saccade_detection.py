@@ -129,8 +129,29 @@ def detect_saccades_from_video(video_path, stimulus, fps):
         np.ndarray: Binary vector of detected saccades in the video (same length as video frames).
     """
     stimulus_saccades = detect_saccades_from_stimulus(stimulus)
-    print(stimulus_saccades)
     refined_saccades = refine_video_saccade_detection(video_path, fps, stimulus_saccades)
+
+    saccade_vector = np.zeros(int(fps * len(stimulus) / fps))  # Initialize binary vector
+    saccade_vector[refined_saccades] = 1
+
+    return saccade_vector
+
+def detect_saccades_from_video_simple(video_path, stimulus, fps):
+    """
+    Main function to detect saccades in a video given the stimulus as prior knowledge.
+    NOTE: This version don't use complex refinement since that's too slow. Ramdomly choose a latency value.
+    
+    Parameters:
+        video_path (str): Path to the video file.
+        stimulus (np.ndarray): The stimulus signal.
+        fps (int): Frames per second of the video.
+    
+    Returns:
+        np.ndarray: Binary vector of detected saccades in the video (same length as video frames).
+    """
+    stimulus_saccades = detect_saccades_from_stimulus(stimulus)
+    refined_saccades = stimulus_saccades + np.random.randint(5, 15)
+    # refined_saccades = refine_video_saccade_detection(video_path, fps, stimulus_saccades)
 
     saccade_vector = np.zeros(int(fps * len(stimulus) / fps))  # Initialize binary vector
     saccade_vector[refined_saccades] = 1
@@ -139,8 +160,8 @@ def detect_saccades_from_video(video_path, stimulus, fps):
 
 
 if __name__ == "__main__":
-    newest_video_path="/Users/tianyulin/My/JHU/Courses/PCM/clinicalData/2022_clip5/0a342632-f6d3-453d-aaa4-789e2a11f15b_2/saccade.avi"
-    stimulus_newest="/Users/tianyulin/My/JHU/Courses/PCM/clinicalData/2022_clip5/0a342632-f6d3-453d-aaa4-789e2a11f15b_2/saccade.csv"
+    newest_video_path="/Users/tianyulin/My/JHU/Courses/PCM/clinicalData/2023_7_12_clip5/0b97d7f0-e54b-4dea-9734-adbeec46da69_2/saccade.avi"
+    stimulus_newest="/Users/tianyulin/My/JHU/Courses/PCM/clinicalData/2023_7_12_clip5/0b97d7f0-e54b-4dea-9734-adbeec46da69_2/saccade.csv"
     df = pd.read_csv(stimulus_newest)  # Replace with your file
     stimulus = df["stimulus"].values  # Extract the stimulus column
     waveform = df["waveform"].values
@@ -158,6 +179,6 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     plt.plot(stimulus)
     plt.plot(waveform)
-    plt.scatter(video_saccade_indices, stimulus[video_saccade_indices])
+    # plt.scatter(video_saccade_indices, stimulus[video_saccade_indices])
     plt.scatter(video_saccade_indices, waveform[video_saccade_indices])
     plt.show()
